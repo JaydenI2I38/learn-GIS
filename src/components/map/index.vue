@@ -1,8 +1,13 @@
 <script setup lang="ts">
+import { getTopLeft, getWidth } from "ol/extent.js";
 import TileLayer from "ol/layer/Tile";
 import Map from "ol/Map";
+
+import { get as getProjection } from "ol/proj.js";
 import TileWMS from "ol/source/TileWMS";
+import WMTS from "ol/source/WMTS.js";
 import XYZ from "ol/source/XYZ";
+import WMTSTileGrid from "ol/tilegrid/WMTS.js";
 import View from "ol/View";
 
 import { onMounted } from "vue";
@@ -28,6 +33,7 @@ function initMap() {
 
 	addBoundaryLinesLayer();
 	addCoastlinesLayer();
+	addWMTSLayer();
 }
 
 /**
@@ -67,6 +73,59 @@ function addCoastlinesLayer() {
 		}),
 	});
 	map.addLayer(wmsLayer);
+}
+
+/**
+ * 代码参考、数据来源：https://openlayers.org/en/latest/examples/wmts-dimensions.html
+ */
+function addWMTSLayer() {
+	const projection = getProjection("EPSG:3857");
+
+	if (!projection) {
+		console.error("无法获取 EPSG:3857 投影");
+		return;
+	}
+
+	const tileSizePixels = 256;
+	const tileSizeMtrs = getWidth(projection.getExtent()) / tileSizePixels;
+	const matrixIds = [];
+	const resolutions = [];
+	for (let i = 0; i <= 14; i++) {
+		matrixIds[i] = String(i);
+		resolutions[i] = tileSizeMtrs / 2 ** i;
+	}
+	const tileGrid = new WMTSTileGrid({
+		origin: getTopLeft(projection.getExtent()),
+		resolutions,
+		matrixIds,
+	});
+
+	const scalgoToken = "CC5BF28A7D96B320C7DFBFD1236B5BEB";
+
+	const wmtsSource = new WMTS({
+		url: `https://ts2.scalgo.com/olpatch/wmts?token=${scalgoToken}`,
+		layer: "SRTM_4_1:SRTM_4_1_flooded_sealevels",
+		format: "image/png",
+		matrixSet: "EPSG:3857",
+		attributions: [
+			"<a href=\"https://scalgo.com\" target=\"_blank\">SCALGO</a>",
+			"<a href=\"https://cgiarcsi.community/data/"
+			+ "srtm-90m-digital-elevation-database-v4-1\""
+			+ " target=\"_blank\">CGIAR-CSI SRTM</a>",
+		],
+		tileGrid,
+		style: "default",
+		dimensions: {
+			threshold: 100,
+		},
+	});
+
+	const wmtsLayer = new TileLayer({
+		opacity: 0.5,
+		source: wmtsSource,
+	});
+
+	map.addLayer(wmtsLayer);
 }
 
 onMounted(() => {
