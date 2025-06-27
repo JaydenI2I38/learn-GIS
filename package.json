@@ -11,6 +11,7 @@
 		"lint": "eslint ."
 	},
 	"dependencies": {
+		"ol": "^10.6.1",
 		"vue": "^3.5.17"
 	},
 	"devDependencies": {
