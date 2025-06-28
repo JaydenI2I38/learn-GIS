@@ -34,6 +34,7 @@ function initMap() {
 	addBoundaryLinesLayer();
 	addCoastlinesLayer();
 	addWMTSLayer();
+	addBJLayer();
 }
 
 /**
@@ -118,6 +119,47 @@ function addWMTSLayer() {
 		dimensions: {
 			threshold: 100,
 		},
+	});
+
+	const wmtsLayer = new TileLayer({
+		opacity: 0.5,
+		source: wmtsSource,
+	});
+
+	map.addLayer(wmtsLayer);
+}
+
+// http://localhost:8080/geoserver/gwc/service/wmts?layer=tutorial%3Abeijing_18&style=&tilematrixset=WebMercatorQuad&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image%2Fpng&TileMatrix=15&TileCol=26981&TileRow=12407
+
+function addBJLayer() {
+	const projection = getProjection("EPSG:3857");
+
+	if (!projection) {
+		console.error("无法获取 EPSG:3857 投影");
+		return;
+	}
+
+	const tileSizePixels = 256;
+	const tileSizeMtrs = getWidth(projection.getExtent()) / tileSizePixels;
+	const matrixIds = [];
+	const resolutions = [];
+	for (let i = 1; i <= 19; i++) {
+		matrixIds[i] = String(i);
+		resolutions[i] = tileSizeMtrs / 2 ** i;
+	}
+	const tileGrid = new WMTSTileGrid({
+		origin: getTopLeft(projection.getExtent()),
+		resolutions,
+		matrixIds,
+	});
+
+	const wmtsSource = new WMTS({
+		url: `http://localhost:8080/geoserver/tutorial/gwc/service/wmts`,
+		layer: "tutorial:beijing_18",
+		format: "image/png",
+		matrixSet: "WebMercatorQuad",
+		tileGrid,
+		style: "",
 	});
 
 	const wmtsLayer = new TileLayer({
