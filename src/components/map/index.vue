@@ -1,15 +1,19 @@
 <script setup lang="ts">
 import { getTopLeft, getWidth } from "ol/extent.js";
+import GeoJSON from "ol/format/GeoJSON";
 import TileLayer from "ol/layer/Tile";
-import Map from "ol/Map";
 
-import { get as getProjection } from "ol/proj.js";
+import VectorLayer from "ol/layer/Vector";
+import { bbox as bboxStrategy } from "ol/loadingstrategy";
+import Map from "ol/Map";
+import { fromLonLat, get as getProjection } from "ol/proj.js";
 import TileWMS from "ol/source/TileWMS";
+import VectorSource from "ol/source/Vector";
+
 import WMTS from "ol/source/WMTS.js";
 import XYZ from "ol/source/XYZ";
 import WMTSTileGrid from "ol/tilegrid/WMTS.js";
 import View from "ol/View";
-
 import { onMounted } from "vue";
 import "ol/ol.css";
 
@@ -31,16 +35,23 @@ function initMap() {
 		}),
 	});
 
-	addBoundaryLinesLayer();
+	map.setView(new View({
+		center: fromLonLat([116.40742, 39.90421]), // 转换！
+		zoom: 12,
+	}));
+
+	// addBoundaryLinesLayer();
 	addCoastlinesLayer();
 	addWMTSLayer();
 	addBJLayer();
+	addWFSLayer();
 }
 
 /**
  * 边界线
  * 数据来源：https://www.naturalearthdata.com/downloads/110m-cultural-vectors/
  * 数据格式：Shapefile
+ * service: WMS
  */
 function addBoundaryLinesLayer() {
 	// ol 的 wms 图层
@@ -61,11 +72,12 @@ function addBoundaryLinesLayer() {
 /**
  * 海岸线
  * 数据来源：geoserver预设数据
+ * service: WMS
  */
 function addCoastlinesLayer() {
 	const wmsLayer = new TileLayer({
 		source: new TileWMS({
-			url: "http://localhost:8080/geoserver/ne/wms",
+			url: "/geoserver/ne/wms",
 			params: {
 				layers: "ne:coastlines",
 				format: "image/png",
@@ -78,6 +90,7 @@ function addCoastlinesLayer() {
 
 /**
  * 代码参考、数据来源：https://openlayers.org/en/latest/examples/wmts-dimensions.html
+ * service: WMTS
  */
 function addWMTSLayer() {
 	const projection = getProjection("EPSG:3857");
@@ -129,8 +142,10 @@ function addWMTSLayer() {
 	map.addLayer(wmtsLayer);
 }
 
-// http://localhost:8080/geoserver/gwc/service/wmts?layer=tutorial%3Abeijing_18&style=&tilematrixset=WebMercatorQuad&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image%2Fpng&TileMatrix=15&TileCol=26981&TileRow=12407
-
+/**
+ * 北京
+ * service: WMTS
+ */
 function addBJLayer() {
 	const projection = getProjection("EPSG:3857");
 
@@ -138,27 +153,6 @@ function addBJLayer() {
 		console.error("无法获取 EPSG:3857 投影");
 		return;
 	}
-
-	// const tileSizePixels = 256;
-	// const projectionExtent = projection.getExtent();
-	// const tileSizeMtrs = getWidth(projectionExtent) / tileSizePixels;
-
-	// const matrixIds = [];
-	// const resolutions = [];
-
-	// const minZoom = 12;
-	// const maxZoom = 18;
-
-	// for (let z = minZoom; z <= maxZoom; z++) {
-	// 	matrixIds.push(String(z));
-	// 	resolutions.push(tileSizeMtrs / 2 ** z);
-	// }
-
-	// const tileGrid = new WMTSTileGrid({
-	// 	origin: getTopLeft(projectionExtent),
-	// 	resolutions,
-	// 	matrixIds,
-	// });s
 
 	const tileSizePixels = 256;
 	const tileSizeMtrs = getWidth(projection.getExtent()) / tileSizePixels;
@@ -174,10 +168,8 @@ function addBJLayer() {
 		matrixIds: [...matrixIds],
 	});
 
-	console.log(tileGrid);
-
 	const wmtsSource = new WMTS({
-		url: `http://localhost:8080/geoserver/tutorial/gwc/service/wmts`,
+		url: `/geoserver/tutorial/gwc/service/wmts`,
 		layer: "tutorial:beijing_18",
 		format: "image/png",
 		matrixSet: "WebMercatorQuad",
@@ -193,6 +185,39 @@ function addBJLayer() {
 	});
 
 	map.addLayer(wmtsLayer);
+}
+
+/**
+ * 边界线
+ * 数据来源：https://www.naturalearthdata.com/downloads/110m-cultural-vectors/
+ * 数据格式：Shapefile
+ * service: WFS
+ */
+function addWFSLayer() {
+	// http://localhost:8080/geoserver/tutorial-boundarylines/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=tutorial-boundarylines%3Ane_110m_admin_0_boundary_lines_land&outputFormat=application%2Fjson&maxFeatures=50
+
+	// const wfsLayer = new TileLayer({
+	// 	source: new TileWMS({
+	// 		url: "http://localhost:8080/geoserver/tutorial-boundarylines/ows",
+	// 		params: {
+	// 			layers: "tutorial-boundarylines:ne_110m_admin_0_boundary_lines_land",
+	// 		},
+	// 	}),
+	// });
+
+	// map.addLayer(wfsLayer);
+
+	const wfsSource = new VectorSource({
+		url: "/geoserver/tutorial-boundarylines/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=tutorial-boundarylines%3Ane_110m_admin_0_boundary_lines_land&outputFormat=application%2Fjson",
+		format: new GeoJSON(),
+		strategy: bboxStrategy,
+	});
+
+	const wfsLayer = new VectorLayer({
+		source: wfsSource,
+	});
+
+	map.addLayer(wfsLayer);
 }
 
 onMounted(() => {
