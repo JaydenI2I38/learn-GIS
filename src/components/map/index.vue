@@ -139,6 +139,27 @@ function addBJLayer() {
 		return;
 	}
 
+	// const tileSizePixels = 256;
+	// const projectionExtent = projection.getExtent();
+	// const tileSizeMtrs = getWidth(projectionExtent) / tileSizePixels;
+
+	// const matrixIds = [];
+	// const resolutions = [];
+
+	// const minZoom = 12;
+	// const maxZoom = 18;
+
+	// for (let z = minZoom; z <= maxZoom; z++) {
+	// 	matrixIds.push(String(z));
+	// 	resolutions.push(tileSizeMtrs / 2 ** z);
+	// }
+
+	// const tileGrid = new WMTSTileGrid({
+	// 	origin: getTopLeft(projectionExtent),
+	// 	resolutions,
+	// 	matrixIds,
+	// });s
+
 	const tileSizePixels = 256;
 	const tileSizeMtrs = getWidth(projection.getExtent()) / tileSizePixels;
 	const matrixIds = [];
@@ -149,9 +170,11 @@ function addBJLayer() {
 	}
 	const tileGrid = new WMTSTileGrid({
 		origin: getTopLeft(projection.getExtent()),
-		resolutions,
-		matrixIds,
+		resolutions: [...resolutions],
+		matrixIds: [...matrixIds],
 	});
+
+	console.log(tileGrid);
 
 	const wmtsSource = new WMTS({
 		url: `http://localhost:8080/geoserver/tutorial/gwc/service/wmts`,
@@ -165,6 +188,8 @@ function addBJLayer() {
 	const wmtsLayer = new TileLayer({
 		opacity: 0.5,
 		source: wmtsSource,
+		minZoom: 11,
+		maxZoom: 19,
 	});
 
 	map.addLayer(wmtsLayer);
