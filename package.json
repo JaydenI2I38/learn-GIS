@@ -11,6 +11,7 @@
 		"lint": "eslint ."
 	},
 	"dependencies": {
+		"cesium": "^1.130.1",
 		"vue": "^3.5.17"
 	},
 	"devDependencies": {
@@ -21,6 +22,7 @@
 		"sass": "^1.89.2",
 		"typescript": "~5.8.3",
 		"vite": "^7.0.0",
+		"vite-plugin-cesium": "^1.2.23",
 		"vue-tsc": "^2.2.10"
 	}
 }
