@@ -54,6 +54,25 @@ function addWindLayer() {
 	map?.addLayer(layer);
 }
 
+function addWMTSLayer() {
+	map?.addSource(`wmts-source`, {
+		type: "raster",
+		tiles: [
+			`/geoserver/gwc/service/wmts?layer=tutorial%3Agfs.tz.pgrb2.0p25.20240714000000.t2m&style=&tilematrixset=WebMercatorQuad&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image%2Fpng&TileMatrix={z}&TileCol={x}&TileRow={y}`,
+			// `https://layer.yunyaoyun.cn:20124/gfs_t2m/wmts/?layer=layer&style=default&tilematrixset=ms_14&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image%2Fpng&TileMatrix={z}&TileCol={x}&TileRow={y}&styleid=t2m&datetime=20250715120000&sdui=%7B%22extra%22%3A%2220250715120000%22%7D`,
+		],
+		tileSize: 256,
+	});
+	map?.addLayer({
+		id: `wmts-layer`,
+		type: "raster",
+		source: `wmts-source`,
+		paint: {
+			"raster-opacity": 0.7,
+		},
+	});
+}
+
 function createBlankStyle() {
 	return {
 		version: 8,
@@ -125,7 +144,7 @@ onMounted(() => {
 		console.log("map loaded", map);
 
 		addBaseLayer();
-
+		addWMTSLayer();
 		addWindLayer();
 	});
 });
