@@ -11,12 +11,14 @@ function addWindLayer() {
 	const tileSource = new maplibreWind.TileSource("wind", {
 		tileSize: 256,
 		minZoom: 0,
-		maxZoom: 4,
+		maxZoom: 6,
 		roundZoom: true,
-		decodeType: maplibreWind.DecodeType.imageWithExif,
-		wrapX: true,
-		// tileBounds: [-78.120282611, -75.191804486, 132.453327310, 68.846393966],
-		url: "https://blog.sakitam.com/wind-layer/data/tiles/2023111700/2023111703/{z}/{x}/{y}/wind-surface.jpeg",
+		decodeType: maplibreWind.DecodeType.image,
+		// decodeType: maplibreWind.DecodeType.imageWithExif,
+		// wrapX: true,
+		dataRange: [[-20, 20], [-20, 20]],
+		// url: "https://blog.sakitam.com/wind-layer/data/tiles/2023111700/2023111703/{z}/{x}/{y}/wind-surface.jpeg",
+		url: "/geoserver/gwc/service/wmts?layer=tutorial%3Auv&style=&tilematrixset=WebMercatorQuad&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image%2Fpng&TileMatrix={z}&TileCol={x}&TileRow={y}",
 	});
 
 	const layer = new maplibreWind.Layer("wind", tileSource, {
@@ -30,22 +32,17 @@ function addWindLayer() {
 				["exponential", 0.5],
 				["zoom"],
 				0,
-				65535 / 4,
-				1,
 				65535 / 8,
-			],
-			"speedFactor": [
-				"interpolate",
-				["exponential", 0.5],
-				["zoom"],
-				0,
 				1,
-				17,
-				0.0,
+				65535 / 16,
 			],
+			"speedFactor": ["interpolate", ["exponential", 0.5], ["zoom"], 0, 1, 15, 0],
+			"fadeOpacity": 0.93,
+			"dropRate": 0.003,
+			"dropRateBump": 0.002,
 		},
 		renderFrom: maplibreWind.RenderFrom.rg,
-		displayRange: [0, 104],
+		displayRange: [-15, 25],
 		renderType: maplibreWind.RenderType.particles,
 		// mask: {
 		// 	data: clip,
@@ -118,11 +115,11 @@ onMounted(() => {
 		center: [0, 0], // starting position [lng, lat]
 		zoom: 1, // starting zoom
 		maxZoom: 12,
-		minZoom: 3,
+		minZoom: 1,
 	});
 
 	map?.setCenter([116.397428, 39.90923]);
-	map?.setZoom(3);
+	map?.setZoom(1);
 
 	map?.on("load", () => {
 		console.log("map loaded", map);
