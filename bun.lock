@@ -4,6 +4,7 @@
     "": {
       "name": "learn-gis",
       "dependencies": {
+        "@mladen/leaflet.tilelayer.wmts": "^1.0.0",
         "leaflet": "^1.9.4",
         "vue": "^3.5.17",
       },
@@ -122,6 +123,8 @@
     "@humanwhocodes/retry": ["@humanwhocodes/retry@0.4.3", "", {}, "sha512-bV0Tgo9K4hfPCek+aMAn81RppFKv2ySDQeMoSZuvTASywNTnVJCArCZE2FWqpvIatKu7VMRLWlR1EazvVhDyhQ=="],
 
     "@jridgewell/sourcemap-codec": ["@jridgewell/sourcemap-codec@1.5.0", "", {}, "sha512-gv3ZRaISU3fjPAgNsriBRqGWQL6quFx04YMPW/zD8XMLsU32mhCCbfbO6KZFLjvYpCZ8zyDEgqsgf+PwPaM7GQ=="],
+
+    "@mladen/leaflet.tilelayer.wmts": ["@mladen/leaflet.tilelayer.wmts@1.0.0", "", {}, "sha512-9sdInmXQGrLxOBTSLrPkxlmB6ECigsY+StGiyzsI3CDdlJBRewHmw2J+eYRb5BrVSknJ0Os62Z5hqYoMoalrtw=="],
 
     "@nodelib/fs.scandir": ["@nodelib/fs.scandir@2.1.5", "", { "dependencies": { "@nodelib/fs.stat": "2.0.5", "run-parallel": "^1.1.9" } }, "sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g=="],
 

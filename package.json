@@ -11,6 +11,7 @@
 		"lint": "eslint ."
 	},
 	"dependencies": {
+		"@mladen/leaflet.tilelayer.wmts": "^1.0.0",
 		"leaflet": "^1.9.4",
 		"vue": "^3.5.17"
 	},
