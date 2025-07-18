@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import * as maplibreWind from "@sakitam-gis/maplibre-wind";
+// import * as maplibreWind from "@sakitam-gis/maplibre-wind";
 import maplibregl from "maplibre-gl";
 import { onMounted } from "vue";
 
 import mapjson from "@/assets/map_without.json";
+import * as maplibreWind from "@/components/windLayer";
 
 let map: maplibregl.Map | null = null;
 
@@ -135,6 +136,7 @@ onMounted(() => {
 		zoom: 1, // starting zoom
 		maxZoom: 12,
 		minZoom: 1,
+		projection: { type: "globe" },
 	});
 
 	map?.setCenter([116.397428, 39.90923]);

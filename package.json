@@ -11,9 +11,13 @@
 		"lint": "eslint ."
 	},
 	"dependencies": {
+		"@mapbox/geojson-rewind": "^0.5.2",
 		"@sakitam-gis/maplibre-wind": "^2.0.3",
+		"@sakitam-gis/rbush": "^3.1.2",
+		"@sakitam-gis/vis-engine": "^1.5.3",
 		"maplibre-gl": "4.7.1",
-		"vue": "^3.5.17"
+		"vue": "^3.5.17",
+		"wind-gl-core": "^2.0.2"
 	},
 	"devDependencies": {
 		"@antfu/eslint-config": "^4.16.1",
