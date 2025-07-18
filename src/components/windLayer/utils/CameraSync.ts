@@ -72,7 +72,7 @@ export default class CameraSync {
 		const pitchAngle = Math.cos(Math.PI / 2 - pitchRad);
 		const groundAngle = Math.PI / 2 + pitchRad;
 		this.cameraToCenterDistance = (0.5 / Math.tan(halfFov)) * height;
-		const point = this.map.transform.project(center);
+		const point = this.map.project(center);
 		const rotateMap = new Matrix4().fromRotationZ(Math.PI);
 		const scale = new Matrix4().fromScale(new Vector3(-worldSize, worldSize, worldSize));
 		const translateMap = new Matrix4().fromTranslation(new Vector3(-point.x, point.y, 0));

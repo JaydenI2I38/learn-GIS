@@ -52,6 +52,8 @@ function addWindLayer() {
 		// },
 	});
 
+	console.log("wind layer", layer);
+
 	map?.addLayer(layer);
 }
 
@@ -136,7 +138,6 @@ onMounted(() => {
 		zoom: 1, // starting zoom
 		maxZoom: 12,
 		minZoom: 1,
-		projection: { type: "globe" },
 	});
 
 	map?.setCenter([116.397428, 39.90923]);
@@ -149,6 +150,12 @@ onMounted(() => {
 		addWMTSLayer();
 		addWindLayer();
 	});
+
+	// map.on("style.load", () => {
+	// 	map.setProjection({
+	// 		type: "globe", // Set projection to globe
+	// 	});
+	// });
 });
 </script>
 

@@ -1,8 +1,9 @@
 import type { SourceType, UserOptions } from "wind-gl-core";
 import rewind from "@mapbox/geojson-rewind";
 import { OrthographicCamera, Renderer, Scene, utils } from "@sakitam-gis/vis-engine";
-
 import maplibregl from "maplibre-gl";
+
+import { coveringTiles } from "maplibre-gl/src/geo/projection/covering_tiles";
 import { BaseLayer, LayerSourceType, polygon2buffer, RenderType, TileID } from "wind-gl-core";
 
 import CameraSync from "./utils/CameraSync";
@@ -299,7 +300,7 @@ export default class Layer {
 							roundZoom: source.roundZoom,
 						};
 
-						const tiles = transform.coveringTiles(opts);
+						const tiles = coveringTiles(transform, opts);
 
 						for (let i = 0; i < tiles.length; i++) {
 							const tile = tiles[i];
@@ -360,7 +361,7 @@ export default class Layer {
 						roundZoom: false,
 					};
 
-					const tiles = transform.coveringTiles(opts);
+					const tiles = coveringTiles(transform, opts);
 					const wrapTiles: TileID[] = [];
 
 					for (let i = 0; i < tiles.length; i++) {
