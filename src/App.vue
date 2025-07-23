@@ -1,12 +1,16 @@
 <script setup lang="ts">
-// import * as maplibreWind from "@sakitam-gis/maplibre-wind";
 import maplibregl from "maplibre-gl";
-import { onMounted } from "vue";
+import { NSlider } from "naive-ui";
+import { onMounted, ref } from "vue";
 
 import mapjson from "@/assets/map_without.json";
+
+// import * as maplibreWind from "@sakitam-gis/maplibre-wind";
 import * as maplibreWind from "@/components/windLayer";
 
 let map: maplibregl.Map | null = null;
+
+const value = ref(0);
 
 function addWindLayer() {
 	const tileSource = new maplibreWind.TileSource("wind", {
@@ -15,10 +19,7 @@ function addWindLayer() {
 		maxZoom: 6,
 		roundZoom: true,
 		decodeType: maplibreWind.DecodeType.image,
-		// decodeType: maplibreWind.DecodeType.imageWithExif,
-		// wrapX: true,
 		dataRange: [[-20, 20], [-20, 20]],
-		// url: "https://blog.sakitam.com/wind-layer/data/tiles/2023111700/2023111703/{z}/{x}/{y}/wind-surface.jpeg",
 		url: "/geoserver/gwc/service/wmts?layer=tutorial%3Auv&style=&tilematrixset=WebMercatorQuad&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image%2Fpng&TileMatrix={z}&TileCol={x}&TileRow={y}",
 	});
 
@@ -26,17 +27,16 @@ function addWindLayer() {
 		styleSpec: {
 			"fill-color": ["interpolate", ["step", 1], ["get", "value"], 0, "#fff", 104, "#fff"],
 			"opacity": 0.7,
-			// "space": 20,
-			// "size": [12, 10],
-			"numParticles": [
-				"interpolate",
-				["exponential", 0.5],
-				["zoom"],
-				0,
-				65535 / 8,
-				1,
-				65535 / 16,
-			],
+			// "numParticles": [
+			// 	"interpolate",
+			// 	["exponential", 0.5],
+			// 	["zoom"],
+			// 	0,
+			// 	65535 / 8,
+			// 	1,
+			// 	65535 / 16,
+			// ],
+			"numParticles": 65535 / 8,
 			"speedFactor": ["interpolate", ["exponential", 0.5], ["zoom"], 0, 1, 15, 0],
 			"fadeOpacity": 0.93,
 			"dropRate": 0.003,
@@ -45,11 +45,6 @@ function addWindLayer() {
 		renderFrom: maplibreWind.RenderFrom.rg,
 		displayRange: [-15, 25],
 		renderType: maplibreWind.RenderType.particles,
-		// mask: {
-		// 	data: clip,
-		// 	// type: maplibreWind.MaskType.outside,
-		// 	type: maplibreWind.MaskType.inside, // 默认是 inside，即只显示范围内的
-		// },
 	});
 
 	map?.addLayer(layer);
@@ -59,7 +54,9 @@ function addWMTSLayer() {
 	map?.addSource(`wmts-source`, {
 		type: "raster",
 		tiles: [
-			`/geoserver/gwc/service/wmts?layer=tutorial%3Agfs.tz.pgrb2.0p25.20240714000000.t2m&style=&tilematrixset=WebMercatorQuad&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image%2Fpng&TileMatrix={z}&TileCol={x}&TileRow={y}`,
+			"/geoserver/gwc/service/wmts?layer=tutorial%3A00_0.01&style=&tilematrixset=WebMercatorQuad&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image%2Fjpeg&TileMatrix={z}&TileCol={x}&TileRow={y}",
+			// `/geoserver/gwc/service/wmts?layer=tutorial%3Atest&style=&tilematrixset=WebMercatorQuad&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image%2Fpng&TileMatrix={z}&TileCol={x}&TileRow={y}`,
+			// `/geoserver/gwc/service/wmts?layer=tutorial%3Agfs.tz.pgrb2.0p25.20240714000000.t2m&style=&tilematrixset=WebMercatorQuad&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image%2Fpng&TileMatrix={z}&TileCol={x}&TileRow={y}`,
 			// `https://layer.yunyaoyun.cn:20124/gfs_t2m/wmts/?layer=layer&style=default&tilematrixset=ms_14&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image%2Fpng&TileMatrix={z}&TileCol={x}&TileRow={y}&styleid=t2m&datetime=20250715120000&sdui=%7B%22extra%22%3A%2220250715120000%22%7D`,
 		],
 		tileSize: 256,
@@ -69,11 +66,10 @@ function addWMTSLayer() {
 		type: "raster",
 		source: `wmts-source`,
 		paint: {
-			"raster-opacity": 0.7,
+			"raster-opacity": 0.8,
 		},
 	});
 }
-
 function createBlankStyle() {
 	return {
 		version: 8,
@@ -147,7 +143,7 @@ onMounted(() => {
 
 		addBaseLayer();
 		addWMTSLayer();
-		addWindLayer();
+		// addWindLayer();
 	});
 });
 </script>
@@ -155,6 +151,9 @@ onMounted(() => {
 <template>
 	<div class="app-container">
 		<div id="map" />
+		<div class="fixed bottom-4 left-1/2 -translate-x-1/2 w-[30vw]">
+			<NSlider v-model:value="value" :step="10" />
+		</div>
 	</div>
 </template>
 

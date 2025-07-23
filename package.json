@@ -15,7 +15,10 @@
 		"@sakitam-gis/maplibre-wind": "^2.0.3",
 		"@sakitam-gis/rbush": "^3.1.2",
 		"@sakitam-gis/vis-engine": "^1.5.3",
+		"@tailwindcss/vite": "^4.1.11",
 		"maplibre-gl": "4.7.1",
+		"naive-ui": "^2.42.0",
+		"tailwindcss": "^4.1.11",
 		"vue": "^3.5.17",
 		"wind-gl-core": "^2.0.2"
 	},
